@@ -1,0 +1,5 @@
+gem "sinatra"
+gem "curb"
+gem "dlog"
+gem "rmagick"
+gem "shotgun"
