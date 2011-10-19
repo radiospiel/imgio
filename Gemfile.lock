@@ -1,7 +1,6 @@
 GEM
   specs:
     curb (0.7.8)
-    dlog (0.2.2)
     rack (1.2.1)
     rmagick (2.11.0)
     shotgun (0.9)
@@ -14,7 +13,6 @@ PLATFORMS
 
 DEPENDENCIES
   curb
-  dlog
   rmagick
   shotgun
   sinatra

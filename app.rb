@@ -2,25 +2,38 @@
 require 'rubygems'
 require 'sinatra'
 require 'curb'
-require 'dlog'
 require 'uri'
 require 'rmagick'
 
-#
-# default expiration time: 1 day
-TIME_TO_LIVE = 24 * 3600
-Dlog.logger = Logger.new "#{File.dirname(__FILE__)}/log/app.log"
+TIME_TO_LIVE = 24 * 3600      # default expiration time: 1 day
 
-class String
-  def blank?; empty? end
+
+class Magick::Image
+  
+  # scale image down, but never up.
+  def scale_down(width, height)
+    change_geometry("#{width}x#{height}") do |cols, rows, img|
+      next if cols >= img.columns || rows >= img.rows
+      img.resize!(cols, rows)
+    end
+  end
+
+    # dst = Magick::Image.new(300,200)
+    # result = dst.composite(img, Magick::CenterGravity, Magick::OverCompositeOp)
+
+  # load an image from an URL
+  def self.from_url(url)
+    curl = Curl::Easy.new(url)
+    curl.follow_location = true
+    curl.perform
+
+    Magick::Image.from_blob(curl.body_str)
+  end
 end
 
-class NilClass
-  def blank?; empty? end
-end
 
 #
-# Some stats
+# Say hi!
 get '/' do
   'Hello, world!'
 end
@@ -34,10 +47,10 @@ get %r{(/(jpg|png)([0-9]{1,3}))(/([0-9]{1,4})(/([0-9]{1,4})))/((http|https)://.*
   uri = URI.parse(url)
 
   # fetch image from URL
-  img = load_image_from_url(url)
+  img = Magick::Image.from_url(url).first
 
   # process image
-  img = scale_image(img, width.to_f, height.to_f)
+  img.scale_down(width, height)
   
   # write out image
   blob = img.to_blob do |img|
@@ -47,41 +60,16 @@ get %r{(/(jpg|png)([0-9]{1,3}))(/([0-9]{1,4})(/([0-9]{1,4})))/((http|https)://.*
   content_type mime_type_for(uri.path)
   content_length blob.length
 
-  # last_modified stat.mtime
-  # expires 500, :public, :must_revalidate
+  # see http://devcenter.heroku.com/articles/http-caching
+  expires TIME_TO_LIVE, :public
+
   blob
 end
 
        
 #
-# helpers
+# various helpers
 helpers do
-
-  # scale image
-  def scale_image(img, width, height)
-    img.change_geometry("#{width}x#{height}") do |cols, rows, img|
-      next if cols >= img.columns || rows >= img.rows
-      img.resize!(cols, rows)
-    end
-    
-    
-    # do we have to extend the image to match the requested size, scaling notwithstanding?
-    # get width/height scaled to image size
-    # if scaled width and height match  
-
-    dst = Magick::Image.new(300,200)
-    result = dst.composite(img, Magick::CenterGravity, Magick::OverCompositeOp)
-  end
-  
-  # load an image from an URL
-  def load_image_from_url(url)
-    curl = Curl::Easy.new(url)
-    curl.follow_location = true
-    curl.perform
-
-    images = Magick::Image.from_blob(curl.body_str)
-    images.first
-  end
 
   MIME_TYPES = {
     '.jpeg' => 'image/jpeg',
