@@ -14,7 +14,7 @@ The following `<img>` tag will always be 120px wide and 90px high. The requested
     <img src="http://<yourserver>/fill/120/90/http://www.google.de/images/srpr/logo3w.png" width="120" height="90">
     </img>
 
-<img src="http://imgio.heroku.com/fill/120/90/http://www.google.de/images/srpr/logo3w.png" width="120" height="90"  style="border: 1px solid black">
+<img src="http://imgio.heroku.com/fill/120/90/http://www.google.de/images/srpr/logo3w.png" width="120" height="90">
 </img>
 
 The requested image will be rescaled to fit completely into the requested size. Empty parts are filled
@@ -23,10 +23,8 @@ in white (JPEG) or transparent (PNG).
     <img src="http://<yourserver>/fit/120/90/http://www.google.de/images/srpr/logo3w.png" width="120" height="90">
     </img>
 
-<img src="http://imgio.heroku.com/fit/png/120/90/http://www.google.de/images/srpr/logo3w.png" width="120" height="90"  style="border: 1px solid black">
+<img src="http://imgio.heroku.com/fit/png/120/90/http://www.google.de/images/srpr/logo3w.png" width="120" height="90">
 </img>
-
-**Note: the black border around the images is applied here for demonstration purposes only. It is not part of the resulting image.
 
 ### Things that automatically scale its content. (UIImageView, android.widget.ImageView)
 
