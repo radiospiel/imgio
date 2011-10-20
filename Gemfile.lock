@@ -2,7 +2,10 @@ GEM
   remote: http://rubygems.org/
   specs:
     curb (0.7.8)
+    image_size (1.0.3)
     rack (1.2.1)
+    rack-test (0.5.7)
+      rack (>= 1.0)
     rmagick (2.11.0)
     shotgun (0.9)
       rack (>= 1.0)
@@ -14,6 +17,8 @@ PLATFORMS
 
 DEPENDENCIES
   curb
+  image_size
+  rack-test
   rmagick
   shotgun
   sinatra

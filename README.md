@@ -85,3 +85,12 @@ Improvement areas are:
   similar, but we should not request the same URL over and over again. Any ideas welcome, especially when
   they do not need a database or some other kind of "local" storage. 
 - **testing**: I simply don't know how to implement proper tests for this script. Do you have ideas in doing so?
+
+## Development
+
+* make sure you have ImageMagick install
+* imgio should work with both ruby 1.8.7 and 1.9.2
+* bundler is used for dependency management, so use `bundle install` to fetch the needed dependencies
+* you can run the included tests with `bundle exec ruby tests/resizing_test.rb`
+
+
