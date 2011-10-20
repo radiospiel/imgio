@@ -1,5 +1,6 @@
 #!/usr/bin/env ruby
 require 'RMagick'
+require 'curb'
 
 #
 # Verbosity: spit out more messages when set 
