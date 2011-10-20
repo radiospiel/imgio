@@ -8,11 +8,7 @@ VERBOSE=true
 # TTL value ins seconds for Caching headers
 TIME_TO_LIVE = 24 * 3600                      # default expiration time: 1 day
 
-require 'rubygems'
-require 'sinatra'
-require 'curb'
 require 'uri'
-require 'rmagick'
 
 # --- set up logging ----------------------------------------------------------
 

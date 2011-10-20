@@ -2,5 +2,5 @@ source :rubygems
 
 gem "sinatra"
 gem "curb"
-gem "rmagick"
+gem "rmagick", :require => 'RMagick'
 gem "shotgun"
