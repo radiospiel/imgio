@@ -1,4 +1,5 @@
 #!/usr/bin/env ruby
+require 'RMagick'
 
 #
 # Verbosity: spit out more messages when set 
