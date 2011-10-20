@@ -15,11 +15,11 @@ require 'uri'
 # --- set up logging ----------------------------------------------------------
 
 def rlog(msg)
-  STDERR.puts msg
+  puts msg
 end
 
 def dlog(msg)
-  STDERR.puts msg if VERBOSE
+  puts msg if VERBOSE
 end
 
 # -----------------------------------------------------------------------------
