@@ -29,7 +29,7 @@ end
 class Magick::Image
   
   # scale image down, but never up.
-  def scale_down(width, height)
+  def scale_down(width, height, format)
     change_geometry("#{width}x#{height}") do |cols, rows, img|
       next if cols >= img.columns || rows >= img.rows
       img.resize!(cols, rows)
@@ -39,7 +39,7 @@ class Magick::Image
   end
   
   # scale image up to fill widthxheight image
-  def fill(width, height)
+  def fill(width, height, format)
     change_geometry("#{width}x#{height}^") do |cols, rows, img|
       next if cols >= img.columns || rows >= img.rows
       img.resize!(cols, rows)
@@ -55,7 +55,7 @@ class Magick::Image
   end
   
   # scale image to fit into widthxheight image
-  def fit(width, height)
+  def fit(width, height, format)
     change_geometry("#{width}x#{height}") do |cols, rows, img|
       next if cols >= img.columns || rows >= img.rows
       img.resize!(cols, rows)
@@ -68,7 +68,7 @@ class Magick::Image
     
     # cut out 
     dst = Magick::Image.new(width * scale,height * scale) {
-      self.background_color = "none"
+      self.background_color = format == "png" ? "none" : "white"
     }
     dst.composite(self, Magick::CenterGravity, Magick::OverCompositeOp)
   end
@@ -96,6 +96,8 @@ get '/' do
 end
 
 get %r{/fit(/(jpg|png)([0-9]{1,3})?)?(/([0-9]{1,4})(/([0-9]{1,4}))?)/((http|https)://.*)} do
+  dlog params[:captures].inspect
+  
   # get parameters
   _,format,quality,_,width,_,height,url,_ = *params[:captures]
   process :fit, format, quality, width, height, url 
@@ -154,7 +156,7 @@ helpers do
     end
      
     # process image
-    img = img.send mode, width.to_i, height.to_i
+    img = img.send mode, width.to_i, height.to_i, format
     
     # write out image
     blob = img.to_blob do |img|
