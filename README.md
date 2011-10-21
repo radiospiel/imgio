@@ -84,13 +84,19 @@ Improvement areas are:
 - **error handling**: What happens if an URL is unresponsive? We certainly should not cache a 404 or something
   similar, but we should not request the same URL over and over again. Any ideas welcome, especially when
   they do not need a database or some other kind of "local" storage. 
-- **testing**: I simply don't know how to implement proper tests for this script. Do you have ideas in doing so?
-
+- **testing**: @sebastianspier contributed some tests that do real work, i.e. actually fetch images off the
+  net (thanks!). It would be nice though to have a) a web mock which just fake-delivers images, and b) some
+  code that actually compares generated images with expected ones. 
+  
 ## Development
 
 * make sure you have ImageMagick install
 * imgio should work with both ruby 1.8.7 and 1.9.2
 * bundler is used for dependency management, so use `bundle install` to fetch the needed dependencies
-* you can run the included tests with `bundle exec ruby tests/resizing_test.rb`
+* you can run the included tests with `rake test`
 
+## Contributors
+
+* @radiospiel
+* @sebastianspier
 
