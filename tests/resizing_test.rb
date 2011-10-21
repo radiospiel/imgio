@@ -1,6 +1,6 @@
 Bundler.require(:default, :test)
 
-require_relative '../app.rb'
+require "#{File.dirname(__FILE__)}/../app.rb"
 require 'test/unit'
 require 'rack/test'
 
