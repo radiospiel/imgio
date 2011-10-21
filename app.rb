@@ -1,5 +1,6 @@
 #!/usr/bin/env ruby
-require 'RMagick'
+
+require 'RMagick' if !defined?(Magick)
 require 'curb'
 
 #
