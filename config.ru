@@ -6,7 +6,7 @@ require "app"
 
 set :environment, ENV['RACK_ENV'].to_sym
 set :root,        ROOT
-set :app_file,    File.join(ROOT, 'app.rb')
+set :app_file,    File.join(ROOT, 'app-sinatra.rb')
 disable :run
 
 run Sinatra::Application
