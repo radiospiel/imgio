@@ -1,5 +1,4 @@
 require "#{File.dirname(__FILE__)}/config"
-require "#{File.dirname(__FILE__)}/lib/magick_processor"
 
 # --- URL parsing -------------------------------------------------------------
 
@@ -10,8 +9,6 @@ get '/' do
 end
 
 get %r{/fit(/(jpg|png)([0-9]{1,3})?)?(/([0-9]{1,4})(/([0-9]{1,4}))?)/((http|https)://.*)} do
-  dlog params[:captures].inspect
-
   # get parameters
   _,format,quality,_,width,_,height,url,_ = *params[:captures]
   process :fit, format, quality, width, height, url

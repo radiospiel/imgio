@@ -1,7 +1,5 @@
 require 'RMagick' if !defined?(Magick)
 
-require 'curb'
-
 # --- RMagick extensions ------------------------------------------------------
 
 class Magick::Image
@@ -53,12 +51,6 @@ class Magick::Image
 
   # load an image from an URL
   def self.from_url(url)
-    curl = Curl::Easy.new(url)
-    curl.follow_location = true
-    curl.perform
-
-    dlog "           #{url}: original size: #{curl.body_str.length} byte"
-
-    Magick::Image.from_blob(curl.body_str)
+    Magick::Image.from_blob Http.get(url)
   end
 end

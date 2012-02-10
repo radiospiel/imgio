@@ -46,7 +46,27 @@ The full URL syntax is `http://<yourserver>[/mode/[format[quality]/]]width/[heig
 * **height**: the height of the resulting image. Defaults to whatever height would match the original image's aspect ratio.
 * **url**: the URL to fetch the original image from.
 
-## How it works
+# Deployment
+
+This script can run via Sinatra and via Goliath. I guess, you know Sinatra. Goliath is a async web server, and allows 
+non-blocking operation of this script.
+
+## Run using Sinatra
+
+    bundle install --without goliath
+    rackup
+
+or
+
+    bundle install --without goliath
+    foreman start -f Procfile.sinatra
+
+## Run using Goliath
+
+    bundle install --without sinatra
+    foreman start -f Procfile.goliath
+
+# How it works
 
 This script parses the URL you pass it, fetches the image at the URL, uses RMagick to convert the image, and spits out the result. Pretty basic stuff, actually.
 
@@ -66,16 +86,23 @@ There are different solutions possible:
 - throw more hardware at it
 - buy more heroku dynos.
 
-## How to deploy
+### What is this Radio stuff?
+
+The Radio::* classes implement a very simple URL to Controller mapper. They are used for Goliath mode, because 
+what they are doing is what Sinatra does already in Sinatra mode. If someone knows how to bind Sinatra to a Goliath
+driven server: go ahead & tell me!
+
+# How to deploy
 
 This is a simple sinatra application. Should work out of the box using the usual sinatra deployment options.
 
-### How to deploy on heroku
+## How to deploy on heroku
 
 - Clone. Adjust configuration in top of app.rb. Get a heroku instance. Push.
 - Buy a few more web dynos at heroku.
+- Consider running this stuff on heroku via goliath
 
-## Help improve this script (if you feel like doing so)
+# Help improve this script (if you feel like doing so)
 
 - Clone. Extend. Fix. Send pull request.
 
@@ -91,7 +118,7 @@ Improvement areas are:
 ## Development
 
 * make sure you have ImageMagick install
-* imgio should work with both ruby 1.8.7 and 1.9.2
+* imgio should work with both ruby 1.8.7 and 1.9.2. The goliath mode needs ruby >= 1.9.2
 * bundler is used for dependency management, so use `bundle install` to fetch the needed dependencies
 * you can run the included tests with `rake test`
 
@@ -99,4 +126,3 @@ Improvement areas are:
 
 * @radiospiel
 * @sebastianspier
-
