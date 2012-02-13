@@ -25,17 +25,6 @@ before do
   expires 24*3600, :public
 end
 
-helpers do
-  def parse_formatstring(formatstring)
-    quality = nil
-    format = formatstring.sub(/([a-z]+)(\d+)/) do
-      quality = $2.to_i || 85
-      $1
-    end
-    [format, quality]
-  end
-end
-
 # GET [mode]/[format[quality]]/width/height/uri
 get %r{/(?:(scale_down|fit|fill)/)?(?:((?:jpg(?:\d{1,3})?|png))/)?(\d+)/(?:(\d+)/)(https?.+)} do |mode, formatstring, width, height, uri|
   # TODO: fix this abnormality. Sinatra eats the second slash from http://.
@@ -44,7 +33,7 @@ get %r{/(?:(scale_down|fit|fill)/)?(?:((?:jpg(?:\d{1,3})?|png))/)?(\d+)/(?:(\d+)
   
   mode ||= :scale_down
   formatstring ||= 'jpg85'
-  format, quality = parse_formatstring(formatstring)
+  /(?<format>[a-z]+)(?<quality>\d+)?/i =~ formatstring
   content_type settings.mime_types[format]
   Magick.process(mode, format, quality, width, height, uri)
 end
