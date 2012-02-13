@@ -1,19 +1,23 @@
 # coding: utf-8
+EVENT_MACHINED=if ENV.key?("IMGIO_EVENT_MACHINED") 
+  ENV["IMGIO_EVENT_MACHINED"].to_i != 0
+else
+  RUBY_VERSION =~ /^1.9/
+end
+
 require "sinatra"
-require "sinatra/synchrony"
+require "sinatra/synchrony" if EVENT_MACHINED
+
 if development?
   require "sinatra/reloader"
   also_reload 'lib/**/*'
 end
-# RMagick spits out a ton of warnings "already initialized constant"
-verbose_was = $VERBOSE
-$VERBOSE=nil; require 'RMagick'
-$VERBOSE = verbose_was
 
 require "#{File.dirname(__FILE__)}/lib/magick_code"
 require "#{File.dirname(__FILE__)}/lib/http"
 
-disable :threaded
+disable :threaded if EVENT_MACHINED
+
 disable :run
 set :mime_types, {
   'jpg'  => 'image/jpeg',
@@ -23,6 +27,29 @@ set :mime_types, {
 
 before do
   expires 24*3600, :public
+end
+
+helpers do
+  
+  def process(mode, format, quality, width, height, url)
+    # fetch image from URL
+    img = Magick::Image.from_blob(Http.get(url)).first
+
+    # get requested image size, fill in height default to match image's aspect ratio.
+    width, height = width.to_i, height.to_i
+    if height <= 0
+      height = img.rows * width / img.columns
+    end
+
+    # process image
+    img = img.send mode, width.to_i, height.to_i, format
+
+    # write out image
+    img.to_blob do |img|
+      img.format = format.upcase
+      img.quality = quality.to_i
+    end
+  end
 end
 
 # GET [mode]/[format[quality]]/width/height/uri
@@ -36,7 +63,8 @@ get %r{/(?:(scale_down|fit|fill)/)?(?:((?:jpg(?:\d{1,3})?|png))/)?(\d+)/(?:(\d+)
   /([a-z]+)(\d+)?/i =~ formatstring
   format, quality = $1, $2
   content_type settings.mime_types[format]
-  Magick.process(mode, format, quality, width, height, uri)
+  
+  process(mode, format, quality, width, height, uri)
 end
 
 get '/*' do

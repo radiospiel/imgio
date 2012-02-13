@@ -4,7 +4,7 @@ require "#{File.dirname(__FILE__)}/../app.rb"
 require 'test/unit'
 Bundler.require(:test)
 
-Sinatra::Synchrony.patch_tests!
+Sinatra::Synchrony.patch_tests! if EVENT_MACHINED
 
 class ImgioTest < Test::Unit::TestCase
   include Rack::Test::Methods

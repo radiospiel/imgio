@@ -1,3 +1,5 @@
+require 'RMagick' unless defined?(Magick)
+
 class Magick::Image
 
   # scale image down, but never up.
