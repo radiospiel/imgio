@@ -7,6 +7,13 @@ an image matching the requested ratio.
 
 imgio creates PNG and JPEG output files, and supports a plethora of input formats - everything RMagick handles.
 
+## When it takes a bit longer...
+
+...to fetch the images from their respective sources, then you will be glad that @Overbyrd implemented sinatra async mode. This mode,
+which is the default on ruby 1.9 installations (and, btw, is not available on Ruby 1.8.7) lets your imgio instance fetch a number
+of images in parallel. You could do this by deploying multiple imgio instances behind an apache or nginx proxy - but this way your
+CPU is used more effectively (and a free Heroku instance looks much better now.)
+
 ### HTML
 
 The following `<img>` tag will always be 120px wide and 90px high. The requested image will be rescaled to fill that size. Overflowing parts of the image will be cut off.
@@ -79,11 +86,11 @@ Improvement areas are:
 - **testing**: @sebastianspier contributed some tests that do real work, i.e. actually fetch images off the
   net (thanks!). It would be nice though to have a) a web mock which just fake-delivers images, and b) some
   code that actually compares generated images with expected ones. 
-  
+
 ## Development
 
 * Make sure you have ImageMagick installed
-* Imgio only works with ruby >= 1.9
+* <strike>Imgio only works with ruby >= 1.9</strike> Works with ruby 1.8.7 and ruby 1.9.2.
 * Bundler is used for dependency management, so use `$ bundle install` to fetch the needed dependencies
 * You can run the included tests with `$ rake`
 
