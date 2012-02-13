@@ -1,1 +1,0 @@
-web: bundle exec ruby app-goliath.rb -sv -e prod -p $PORT
