@@ -37,70 +37,35 @@ wasting precious memory and CPU resources. To do so, just request `http://<yours
 
 ## The full URL syntax
 
-The full URL syntax is `http://<yourserver>[/mode/[format[quality]/]]width/[height/]url`
+The full URL syntax is `http://<yourserver>/[mode]/[format[quality]]/width/[height]/uri`
 
-* **mode**: "fit" or "fill", see examples above.
-* **format**: "png" or "jpg", defaults to "jpg"
-* **quality**: the quality used when generating jpg, defaults to 85
+* **mode**: "fit", "fill", "scale_down", optional, defaults to "scale_down"
+* **format**: "png" or "jpg", optional, defaults to "jpg"
+* **quality**: the quality used when generating jpg, optional, defaults to 85
 * **width**: the width of the resulting image
-* **height**: the height of the resulting image. Defaults to whatever height would match the original image's aspect ratio.
-* **url**: the URL to fetch the original image from.
+* **height**: the height of the resulting image, optional, defaults to whatever height would match the original image's aspect ratio.
+* **uri**: the URI to fetch the original image from
 
 # Deployment
 
-This script can run via Sinatra and via Goliath. I guess, you know Sinatra. Goliath is a async web server, and allows 
-non-blocking operation of this script.
+## Run
 
-## Run using Sinatra
+    bundle install
+    bundle exec thin start
 
-    bundle install --without goliath
-    rackup
-
-or
-
-    bundle install --without goliath
-    foreman start -f Procfile.sinatra
-
-## Run using Goliath
-
-    bundle install --without sinatra
-    foreman start -f Procfile.goliath
-
-# How it works
+## How it works
 
 This script parses the URL you pass it, fetches the image at the URL, uses RMagick to convert the image, and spits out the result. Pretty basic stuff, actually.
 
-### Why it is fast
+### Caching is important
 
 The HTTP response has the proper cache headers set to cache the result for 1 day (on default). That means
 each requested image is built only a few times per day - assuming your webserver is configured to use a cache like [varnish](https://www.varnish-cache.org/). Hint: Heroku runs its instances behind a varnish cache.
 
-### Why it is slow
-
-Whenever an image is requested and not delivered by the cache the server needs to fetch and then to rescale the image. 
-This needs some time, and if your server is configured to run only a limited number of processes in parallel (and yes, your server should be configured like this) some requests will be queued before they will be processed.
-
-There are different solutions possible: 
-
-- rewrite this script to not block when fetching the image
-- throw more hardware at it
-- buy more heroku dynos.
-
-### What is this Radio stuff?
-
-The Radio::* classes implement a very simple URL to Controller mapper. They are used for Goliath mode, because 
-what they are doing is what Sinatra does already in Sinatra mode. If someone knows how to bind Sinatra to a Goliath
-driven server: go ahead & tell me!
-
 # How to deploy
 
 This is a simple sinatra application. Should work out of the box using the usual sinatra deployment options.
-
-## How to deploy on heroku
-
-- Clone. Adjust configuration in top of app.rb. Get a heroku instance. Push.
-- Buy a few more web dynos at heroku.
-- Consider running this stuff on heroku via goliath
+[How to deploy on heroku](http://blog.heroku.com/archives/2009/3/5/32_deploy_merb_sinatra_or_any_rack_app_to_heroku/)
 
 # Help improve this script (if you feel like doing so)
 
@@ -117,12 +82,13 @@ Improvement areas are:
   
 ## Development
 
-* make sure you have ImageMagick install
-* imgio should work with both ruby 1.8.7 and 1.9.2. The goliath mode needs ruby >= 1.9.2
-* bundler is used for dependency management, so use `bundle install` to fetch the needed dependencies
-* you can run the included tests with `rake test`
+* Make sure you have ImageMagick installed
+* Imgio only works with ruby >= 1.9
+* Bundler is used for dependency management, so use `$ bundle install` to fetch the needed dependencies
+* You can run the included tests with `$ rake`
 
 ## Contributors
 
 * @radiospiel
 * @sebastianspier
+* @Overbryd

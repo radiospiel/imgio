@@ -37,7 +37,7 @@ helpers do
 end
 
 # GET [mode]/[format[quality]]/width/height/uri
-get %r{/(?:(scale_down|fit|fill)/)?(?:((?:jpg(?:\d{1,3})?|png))/)?(\d+)/(\d+)/(https?.+)} do |mode, formatstring, width, height, uri|
+get %r{/(?:(scale_down|fit|fill)/)?(?:((?:jpg(?:\d{1,3})?|png))/)?(\d+)/(?:(\d+)/)(https?.+)} do |mode, formatstring, width, height, uri|
   # TODO: fix this abnormality. Sinatra eats the second slash from http://.
   #       No, I am serious, it is just gone in the captures.
   uri.sub!(/(https?):\/\/?/) { "#{$1}://" }
@@ -52,8 +52,7 @@ end
 get '/*' do
   content_type "text/plain"
   <<-USAGE
-  Welcome to imgio!       „Probably the most elegant way
-                           to get rid of your image resizing problems.“
+  Welcome to imgio!                                 „Your friendly image asset resizing service“
   
   FORK ME: https://github.com/radiospiel/imgio
   
@@ -70,7 +69,7 @@ get '/*' do
   
   DOCUMENTATION:
   
-    GET [mode]/[format[quality]]/width/height/uri
+    GET [mode]/[format[quality]]/width/[height]/uri
     
       width, height must be a positive integer
       uri must adhere to URI specification
@@ -80,6 +79,7 @@ get '/*' do
       mode: scale_down
       format: jpg
       quality: 85
+      height: whatever height would match the original image's aspect ratio
   
   USAGE
 end
