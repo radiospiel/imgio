@@ -1,7 +1,3 @@
-require 'RMagick' if !defined?(Magick)
-
-# --- RMagick extensions ------------------------------------------------------
-
 class Magick::Image
 
   # scale image down, but never up.
@@ -47,10 +43,5 @@ class Magick::Image
       self.background_color = format == "png" ? "none" : "white"
     }
     dst.composite(self, Magick::CenterGravity, Magick::OverCompositeOp)
-  end
-
-  # load an image from an URL
-  def self.from_url(url)
-    Magick::Image.from_blob Http.get(url)
   end
 end

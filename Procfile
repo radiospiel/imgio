@@ -1,1 +1,1 @@
-web: bundle exec ruby app-goliath.rb -sv -e prod -p $PORT
+web: bundle exec thin start -p $PORT
