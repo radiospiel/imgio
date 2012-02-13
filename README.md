@@ -87,7 +87,7 @@ Improvement areas are:
 * Bundler is used for dependency management, so use `$ bundle install` to fetch the needed dependencies
 * You can run the included tests with `$ rake`
 
-## Contributors
+## [Contributors](https://github.com/radiospiel/imgio/contributors)
 
 * @radiospiel
 * @sebastianspier
