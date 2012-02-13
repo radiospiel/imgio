@@ -1,6 +1,6 @@
 ENV['RACK_ENV'] = 'test'
 Bundler.setup(:default)
-require_relative "../app.rb"
+require "#{File.dirname(__FILE__)}/../app.rb"
 require 'test/unit'
 Bundler.require(:test)
 

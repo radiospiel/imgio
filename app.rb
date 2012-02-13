@@ -10,8 +10,8 @@ verbose_was = $VERBOSE
 $VERBOSE=nil; require 'RMagick'
 $VERBOSE = verbose_was
 
-require_relative "lib/magick_processor"
-require_relative "lib/http"
+require "#{File.dirname(__FILE__)}/lib/magick_code"
+require "#{File.dirname(__FILE__)}/lib/http"
 
 disable :threaded
 disable :run
@@ -33,7 +33,8 @@ get %r{/(?:(scale_down|fit|fill)/)?(?:((?:jpg(?:\d{1,3})?|png))/)?(\d+)/(?:(\d+)
   
   mode ||= :scale_down
   formatstring ||= 'jpg85'
-  /(?<format>[a-z]+)(?<quality>\d+)?/i =~ formatstring
+  /([a-z]+)(\d+)?/i =~ formatstring
+  format, quality = $1, $2
   content_type settings.mime_types[format]
   Magick.process(mode, format, quality, width, height, uri)
 end
