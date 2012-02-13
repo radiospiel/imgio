@@ -1,19 +1,11 @@
 source :rubygems
 
-group :sinatra do
-    gem "sinatra"
-    gem "shotgun"
-end
-
+gem "sinatra-synchrony"
 gem "rmagick"
+gem "thin"
+gem "sinatra-contrib", group: :development
 
 group :test do
-    gem "rack-test"
-    gem "image_size"
-end
-
-group :goliath do
-    gem 'goliath', :git => 'git://github.com/postrank-labs/goliath.git'
-    gem 'em-http-request', :git => 'git://github.com/igrigorik/em-http-request.git'
-    gem 'em-synchrony', :git => 'git://github.com/igrigorik/em-synchrony.git'
+  gem "rack-test", require: 'rack/test'
+  gem "image_size"
 end
