@@ -28,13 +28,20 @@ class ImgioTest < Test::Unit::TestCase
     assert_equal 100, image.width
     assert_equal 50, image.height
   end
-  
+
   def test_fit_the_image_into_a_rectangle
     get '/fill/100/50/http://www.rubycgi.org/image/ruby_gtk_book_title.jpg'
     assert_equal 100, image.width
     assert_equal 50, image.height
   end
-  
+
+  def test_extract_frame_from_gif_animation
+    get '/frames/2/http://www.gifart.de/img/00008872.gif'
+    image_list = Magick::ImageList.new.from_blob(last_response.body)
+    assert_equal 1, image_list.length
+    assert_equal 'GIF', image_list.first.format
+  end
+
   def test_respond_with_jpg_by_default
     get '/fill/100/50/http://www.rubycgi.org/image/ruby_gtk_book_title.jpg'
     assert_equal :jpeg, image.format
