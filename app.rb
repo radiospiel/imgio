@@ -25,7 +25,18 @@ before do
   expires 24*3600, :public
 end
 
-# GET [mode]/[format[quality]]/width/height/uri
+# GET /frames/frame/uri
+get %r{/frames/(?:(\d+)/)?(https?.+)} do |frame, uri|
+  # TODO: fix this abnormality. Sinatra eats the second slash from http://.
+  #       No, I am serious, it is just gone in the captures.
+  uri.sub!(/(https?):\/\/?/) { "#{$1}://" }
+  
+  frame ||= 1
+  content_type settings.mime_types['gif']
+  Magick.extract_frame(frame, uri)
+end
+
+# GET /[mode]/[format[quality]]/width/height/uri
 get %r{/(?:(scale_down|fit|fill)/)?(?:((?:jpg(?:\d{1,3})?|png))/)?(\d+)/(?:(\d+)/)(https?.+)} do |mode, formatstring, width, height, uri|
   # TODO: fix this abnormality. Sinatra eats the second slash from http://.
   #       No, I am serious, it is just gone in the captures.

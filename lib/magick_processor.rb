@@ -20,4 +20,11 @@ module Magick
       img.quality = quality.to_i
     end
   end
+  
+  def self.extract_frame(frame, uri)
+    imagelist = Magick::ImageList.new.from_blob(Http.get(uri))
+    if image = imagelist[frame.to_i]
+      image.to_blob
+    end
+  end
 end
