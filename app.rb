@@ -5,6 +5,8 @@ else
   RUBY_VERSION =~ /^1.9/
 end
 
+EVENT_MACHINED = false
+
 require "sinatra"
 require "sinatra/synchrony" if EVENT_MACHINED
 
@@ -13,61 +15,46 @@ if development?
   also_reload 'lib/**/*'
 end
 
-require "#{File.dirname(__FILE__)}/lib/magick_code"
+require "RMagick" unless defined?(Magick)
+
 require "#{File.dirname(__FILE__)}/lib/http"
+require "#{File.dirname(__FILE__)}/lib/robot"
+require "#{File.dirname(__FILE__)}/lib/assembly_line"
 
 disable :threaded if EVENT_MACHINED
 
 disable :run
-set :mime_types, {
-  'jpg'  => 'image/jpeg',
-  'gif'  => 'image/gif',
-  'png'  => 'image/png'
-  }.tap {|h| h.default = "application/octet-stream" }
 
 before do
   expires 24*3600, :public
 end
 
-helpers do
+
+get(/\/./) do
+  # Hu? Sinatra (or probably Rack) eats double slashes in request.path?
+  request_path = request.path.
+    gsub(%r{\b(http|https):/}, "\\1://").
+    gsub(%r{\b(http|https):///}, "\\1://")
+
+  query_string = request.env["QUERY_STRING"].to_s
+
+  path_with_query = request_path
+  path_with_query += "?#{query_string}" unless query_string.empty?
+
+  assembly_line = AssemblyLine.new path_with_query
   
-  def process(mode, format, quality, width, height, url)
-    # fetch image from URL
-    img = Magick::Image.from_blob(Http.get(url)).first
+  result = assembly_line.run
 
-    # get requested image size, fill in height default to match image's aspect ratio.
-    width, height = width.to_i, height.to_i
-    if height <= 0
-      height = img.rows * width / img.columns
-    end
-
-    # process image
-    img = img.send mode, width.to_i, height.to_i, format
-
-    # write out image
-    img.to_blob do |img|
-      img.format = format.upcase
-      img.quality = quality.to_i
-    end
+  # Note that Robot::Png is able to run without a configure! step.
+  if result.last.is_a?(Magick::Image)
+    result = Robot::Writer::Png.new.run(*result)
   end
+
+  headers result.first
+  result.last
 end
 
-# GET [mode]/[format[quality]]/width/height/uri
-get %r{/(?:(scale_down|fit|fill)/)?(?:((?:jpg(?:\d{1,3})?|png))/)?(\d+)/(?:(\d+)/)(https?.+)} do |mode, formatstring, width, height, uri|
-  # TODO: fix this abnormality. Sinatra eats the second slash from http://.
-  #       No, I am serious, it is just gone in the captures.
-  uri.sub!(/(https?):\/\/?/) { "#{$1}://" }
-  
-  mode ||= :scale_down
-  formatstring ||= 'jpg85'
-  /([a-z]+)(\d+)?/i =~ formatstring
-  format, quality = $1, $2
-  content_type settings.mime_types[format]
-  
-  process(mode, format, quality, width, height, uri)
-end
-
-get '/*' do
+get '/' do
   content_type "text/plain"
   <<-USAGE
   Welcome to imgio!                                 „Your friendly image asset resizing service“

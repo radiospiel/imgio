@@ -18,31 +18,33 @@ CPU is used more effectively (and a free Heroku instance looks much better now.)
 
 The following `<img>` tag will always be 120px wide and 90px high. The requested image will be rescaled to fill that size. Overflowing parts of the image will be cut off.
 
-    <img src="http://<yourserver>/fill/120/90/http://www.google.de/images/srpr/logo3w.png" width="120" height="90">
+    <img src="http://<yourserver>/fill/120x90/http://www.google.de/images/srpr/logo3w.png" width="120" height="90">
     </img>
 
-<img src="http://imgio.heroku.com/fill/120/90/http://www.google.de/images/srpr/logo3w.png" width="120" height="90">
+<img src="http://imgio.heroku.com/fill/120x90/http://www.google.de/images/srpr/logo3w.png" width="120" height="90">
 </img>
 
 The requested image will be rescaled to fit completely into the requested size. Empty parts are filled
 in white (JPEG) or transparent (PNG).
 
-    <img src="http://<yourserver>/fit/120/90/http://www.google.de/images/srpr/logo3w.png" width="120" height="90">
+    <img src="http://<yourserver>/fit/120x90/http://www.google.de/images/srpr/logo3w.png" width="120" height="90">
     </img>
 
-<img src="http://imgio.heroku.com/fit/png/120/90/http://www.google.de/images/srpr/logo3w.png" width="120" height="90">
+<img src="http://imgio.heroku.com/fit/120x90/http://www.google.de/images/srpr/logo3w.png" width="120" height="90">
 </img>
 
 ### Things that automatically scale its content. (UIImageView, android.widget.ImageView)
 
 Such views allow you to scale & fill properly by themselves. However, escecially on mobile 
 platforms scaling down the image to whatever is actually needed still helps with not 
-wasting precious memory and CPU resources. To do so, just request `http://<yourserver>/120/90/http://www.google.de/images/srpr/logo3w.png` instead.
+wasting precious memory and CPU resources. To do so, just request `http://<yourserver>/fill/120x90/http://www.google.de/images/srpr/logo3w.png` instead.
   
-<img src="http://imgio.heroku.com/120/90/http://www.google.de/images/srpr/logo3w.png" style="border: 1px solid black">
+<img src="http://imgio.heroku.com/fill/120x90/http://www.google.de/images/srpr/logo3w.png" style="border: 1px solid black">
 </img>
 
 ## The full URL syntax
+
+Note: this information is no longer true.
 
 The full URL syntax is `http://<yourserver>/[mode]/[format[quality]]/width/[height]/uri`
 
