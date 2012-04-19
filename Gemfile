@@ -17,4 +17,6 @@ group :test do
 
   gem "mocha"
   gem "rake"
+  
+  gem "simplecov"
 end

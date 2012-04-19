@@ -1,9 +1,7 @@
-require 'rake/testtask'
-desc "Run tests"
-Rake::TestTask.new(:test) do |test|
-  test.libs << 'lib' << 'test'
-  test.pattern = 'tests/**/*_test.rb'
-  test.verbose = true
+desc "Run all test with code coverage"
+task :coverage do
+  system "bundle exec ruby tests/coverage.rb" 
 end
+   
+task :default => :coverage
 
-task :default => :test
