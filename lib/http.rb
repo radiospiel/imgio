@@ -5,10 +5,10 @@ else
   require "uri"
 end
 
-# The Http module exports Http.get, which returns the body of an URL, and is able to follow
-# a certain number of redirections.
-#
-module Http
+# The SimpleHttp module exports SimpleHttp.get, which returns the body of an URL, and is able to follow
+# a certain number of redirections. Note: This module is named "SimpleHttp" to prevent a name clash with
+# VCR and/or WebMock.
+module SimpleHttp
   MAX_REDIRECTIONS=10
 
   module Async
