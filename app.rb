@@ -41,7 +41,7 @@ get(/\/./) do
   path_with_query = request_path
   path_with_query += "?#{query_string}" unless query_string.empty?
 
-  assembly_line = AssemblyLine.new path_with_query
+  assembly_line = AssemblyLine.new(path_with_query)
   
   result = assembly_line.run
 

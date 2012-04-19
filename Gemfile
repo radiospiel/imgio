@@ -14,4 +14,7 @@ group :test do
   gem "vcr"
   gem "webmock"
   gem "psych"
+
+  gem "mocha"
+  gem "rake"
 end
