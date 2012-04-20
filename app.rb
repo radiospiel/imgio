@@ -29,17 +29,12 @@ before do
   expires 24*3600, :public
 end
 
+# By default rack-protection removes double slashes, we do need them.
+set :protection, :except => :path_traversal
 
 get(/\/./) do
-  # Hu? Sinatra (or probably Rack) eats double slashes in request.path?
-  request_path = request.path.
-    gsub(%r{\b(http|https):/}, "\\1://").
-    gsub(%r{\b(http|https):///}, "\\1://")
-
-  query_string = request.env["QUERY_STRING"].to_s
-
-  path_with_query = request_path
-  path_with_query += "?#{query_string}" unless query_string.empty?
+  path_with_query = request.path
+  path_with_query += "?#{request.query_string}" unless request.query_string.empty?
 
   assembly_line = AssemblyLine.new(path_with_query)
   
