@@ -44,16 +44,20 @@ wasting precious memory and CPU resources. To do so, just request `http://<yours
 
 ## The full URL syntax
 
-Note: this information is no longer true.
+The URL describes an internal workflow. Think of it as a Unix shell pipe in left to right: the source URL goes in,
+travels through different data processors ('robots'), and finally comes out of the workflow again. The full URL syntax 
+is `http://<yourserver>/[robot[/options]]*/uri`. Which and how many, if any, options are valid is specific to each robot.
 
-The full URL syntax is `http://<yourserver>/[mode]/[format[quality]]/width/[height]/uri`
+imgio currently supports these robots: )
 
-* **mode**: "fit", "fill", "scale_down", optional, defaults to "scale_down"
-* **format**: "png" or "jpg", optional, defaults to "jpg"
-* **quality**: the quality used when generating jpg, optional, defaults to 85
-* **width**: the width of the resulting image
-* **height**: the height of the resulting image, optional, defaults to whatever height would match the original image's aspect ratio.
-* **uri**: the URI to fetch the original image from
+- **fit/<width>x<height>**: takes an image and produces a new image scaled down to fit into 
+  <width> x <height> pixels. The image will never scaled up; if it is too small than 
+  width and height will be adjusted to keep the requested aspect ratio.
+- **fill/<width>x<height>**: takes an image and produces a new image scaled down to fit into 
+  <width> x <height> pixels. The image will never scaled up; if it is too small than 
+  width and height will be adjusted to keep the requested aspect ratio.
+- **png**: convert the image into PNG format. Currently supported only in the left-most position.
+- **jpg[/quality]**: convert the image into JPEG format. Currently supported only in the left-most position.
 
 # Deployment
 
@@ -68,31 +72,25 @@ This script parses the URL you pass it, fetches the image at the URL, uses RMagi
 
 ### Caching is important
 
-The HTTP response has the proper cache headers set to cache the result for 1 day (on default). That means
-each requested image is built only a few times per day - assuming your webserver is configured to use a cache like [varnish](https://www.varnish-cache.org/). Hint: Heroku runs its instances behind a varnish cache.
+The HTTP response has the proper cache headers set to cache the result for 1 day (on default). 
+That means each requested image is built only a few times per day - assuming your webserver 
+is configured to use a cache like [varnish](https://www.varnish-cache.org/). 
+Hint: Heroku runs its instances behind a varnish cache.
 
 # How to deploy
 
-This is a simple sinatra application. Should work out of the box using the usual sinatra deployment options.
+This is a simple sinatra application. Should work out of the box using the usual sinatra 
+deployment options.
 [How to deploy on heroku](http://blog.heroku.com/archives/2009/3/5/32_deploy_merb_sinatra_or_any_rack_app_to_heroku/)
 
 # Help improve this script (if you feel like doing so)
 
 - Clone. Extend. Fix. Send pull request.
 
-Improvement areas are:
-
-- **error handling**: What happens if an URL is unresponsive? We certainly should not cache a 404 or something
-  similar, but we should not request the same URL over and over again. Any ideas welcome, especially when
-  they do not need a database or some other kind of "local" storage. 
-- **testing**: @sebastianspier contributed some tests that do real work, i.e. actually fetch images off the
-  net (thanks!). It would be nice though to have a) a web mock which just fake-delivers images, and b) some
-  code that actually compares generated images with expected ones. 
-
 ## Development
 
 * Make sure you have ImageMagick installed
-* <strike>Imgio only works with ruby >= 1.9</strike> Works with ruby 1.8.7 and ruby 1.9.2.
+* Imgio only works with ruby >= 1.9.
 * Bundler is used for dependency management, so use `$ bundle install` to fetch the needed dependencies
 * You can run the included tests with `$ rake`
 

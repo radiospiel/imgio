@@ -63,28 +63,29 @@ get '/' do
   
   EXAMPLES:
   
-    GET http://#{request.host_with_port}/120/90/http://www.google.de/images/srpr/logo3w.png
-    # => responds with the image scaled down to 120x90
-  
-    GET http://#{request.host_with_port}/fill/120/90/http://www.google.de/images/srpr/logo3w.png
+    GET http://#{request.host_with_port}/fill/120x90/http://www.google.de/images/srpr/logo3w.png
     # => responds with the image filling a rectangle of 120x90
-  
-    GET http://#{request.host_with_port}/fit/80/80/http://www.google.de/images/srpr/logo3w.png
+
+    GET http://#{request.host_with_port}/fit/80x80/http://www.google.de/images/srpr/logo3w.png
     # => responds with the image fitting a rectangle of 80x80
-  
+
   DOCUMENTATION:
   
-    GET [mode]/[format[quality]]/width/[height]/uri
-    
-      width, height must be a positive integer
-      uri must adhere to URI specification
-    
-    Defaults:
-    
-      mode: scale_down
-      format: jpg
-      quality: 85
-      height: whatever height would match the original image's aspect ratio
+    The URL describes an internal workflow. Think of it as a Unix shell pipe in left to right: the source URL 
+    goes in, travels through different data processors ('robots'), and finally comes out of the workflow again. 
+    The full URL syntax is `http:///#{request.host_with_port}/[robot[/options]]*/uri`. Which and how many, 
+    if any, options are valid is specific to each robot.
+
+    imgio currently supports these robots: )
+
+    - **fit/<width>x<height>**: takes an image and produces a new image scaled down to fit into 
+      <width> x <height> pixels. The image will never scaled up; if it is too small than 
+      width and height will be adjusted to keep the requested aspect ratio.
+    - **fill/<width>x<height>**: takes an image and produces a new image scaled down to fit into 
+      <width> x <height> pixels. The image will never scaled up; if it is too small than 
+      width and height will be adjusted to keep the requested aspect ratio.
+    - **png**: convert the image into PNG format. Currently supported only in the left-most position.
+    - **jpg[/quality]**: convert the image into JPEG format. Currently supported only in the left-most position.
   
   USAGE
 end
