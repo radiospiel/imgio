@@ -56,6 +56,10 @@ get(/\/./) do
     if exception.to_s == '404 "Not Found"'
       halt(404)
     end
+  rescue RuntimeError
+    if exception.to_s.index('Invalid Path')
+      halt(404)
+    end
   end
 
   # Note that Robot::Png is able to run without a configure! step.
