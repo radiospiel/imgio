@@ -39,11 +39,24 @@ get(/\/./) do
   query_string = request.env["QUERY_STRING"].to_s
 
   path_with_query = request_path
+  
+  # If no fit/fill robot is defined, then default to fit
+  unless path_with_query.index('fit') || path_with_query.index('fill')
+    path_with_query = '/fit' + path_with_query
+  end
+
   path_with_query += "?#{query_string}" unless query_string.empty?
 
   assembly_line = AssemblyLine.new(path_with_query)
   
-  result = assembly_line.run
+  begin
+    result = assembly_line.run
+  rescue Net::HTTPServerException => exception
+    # 404's should return 404 instead of 500
+    if exception.to_s == '404 "Not Found"'
+      halt(404)
+    end
+  end
 
   # Note that Robot::Png is able to run without a configure! step.
   if result.last.is_a?(Magick::Image)
