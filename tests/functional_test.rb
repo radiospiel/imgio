@@ -3,16 +3,8 @@ require_relative "test_helper"
 #
 # Test the "controller" method: is a Rack request properly wired
 # to the Assembly Line?
-class FunctionalTest < Test::Unit::TestCase
+class FunctionalTest < ImgioTestCase
   include Rack::Test::Methods
-
-  def setup
-    VCR.insert_cassette('imgio')
-  end
-  
-  def teardown
-    VCR.eject_cassette
-  end
 
   def app
     Sinatra::Application

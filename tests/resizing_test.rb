@@ -1,14 +1,6 @@
 require_relative "test_helper"
 
-class ResizingTest < Test::Unit::TestCase
-  def setup
-    VCR.insert_cassette('imgio')
-  end
-  
-  def teardown
-    VCR.eject_cassette
-  end
-  
+class ResizingTest < ImgioTestCase
   attr :headers, :image
 
   def run_assembly(path)
@@ -19,9 +11,8 @@ class ResizingTest < Test::Unit::TestCase
   
   def test_raise_exception_on_invalid_request
     assert_raise(RuntimeError) {  
-      image = run_assembly '/fill/100/50/http://www.rubycgi.org/image/ruby_gtk_book_title.jpg'
-      assert_equal 100, image.columns
-      assert_equal 50, image.rows
+      # The request path's format is invalid.
+      run_assembly '/fill/100/50/http://www.rubycgi.org/image/ruby_gtk_book_title.jpg'
     }
   end
   
