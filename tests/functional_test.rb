@@ -30,7 +30,7 @@ class FunctionalTest < Test::Unit::TestCase
     mock = {}
     
     AssemblyLine.expects(:new).with(url).returns(mock)
-    mock.expects(:run).returns [{ "header" => "value"}, "42"]
+    mock.expects(:run).returns [200, { "header" => "value"}, "42"]
 
     get url
 

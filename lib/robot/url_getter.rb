@@ -2,9 +2,8 @@
 class Robot::UrlGetter < Robot
   alias :scheme :name
 
-  # Note: while other robots take two parameters (headers, data) that 
-  # define the input the robot is working on, the UrlGetter robot does not 
-  # do that.
+  # Note: while other robots take status, headers, data parameters to define
+  # the input this robot is working on, the UrlGetter robot does not do that.
   #
   # The UrlGetter's result is the data which is read from the URL specified
   # via configure! (which, on a side note, makes sure that an UrlGetter is
@@ -14,7 +13,7 @@ class Robot::UrlGetter < Robot
     blob = ::SimpleHttp.get @url
 
     image = Magick::Image.from_blob(blob).first
-    [ {}, image ]
+    [ 200, {}, image ]
   end
   
   def configure!(path)

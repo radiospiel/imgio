@@ -13,7 +13,7 @@ class ResizingTest < Test::Unit::TestCase
 
   def run_assembly(path)
     assembly_line = AssemblyLine.new(path)
-    @headers, body = assembly_line.run
+    @status, @headers, body = assembly_line.run
     body
   end
   
@@ -32,7 +32,7 @@ class ResizingTest < Test::Unit::TestCase
   end
   
   def test_fit_the_image_into_a_rectangle
-    image = run_assembly '/fill/100x50/http://www.rubycgi.org/image/ruby_gtk_book_title.jpg'
+    image = run_assembly '/fit/100x50/http://www.rubycgi.org/image/ruby_gtk_book_title.jpg'
     assert_equal 100, image.columns
     assert_equal 50, image.rows
   end

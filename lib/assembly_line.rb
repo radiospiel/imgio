@@ -65,10 +65,14 @@ class AssemblyLine
   def self.new_robot(name)
     @robots[name].new(name)
   end
-  
+
+  # Runs the AssemblyLine: starts by running the first robot, and passes the
+  # values thru all robots, but only if the status is 200.
   def run
     @robots.inject(nil) do |data, robot|
-      robot.run(*data)
+      data = robot.run(*data)
+      return data if data.first != 200
+      data
     end
   end
 end

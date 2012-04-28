@@ -43,15 +43,15 @@ get(/\/./) do
 
   assembly_line = AssemblyLine.new(path_with_query)
   
-  result = assembly_line.run
+  status, headers, body = assembly_line.run
 
   # Note that Robot::Png is able to run without a configure! step.
-  if result.last.is_a?(Magick::Image)
-    result = Robot::Writer::Png.new.run(*result)
+  if status == 200 && body.is_a?(Magick::Image)
+    status, headers, body = Robot::Writer::Png.new.run(status, headers, body)
   end
 
-  headers result.first
-  result.last
+  self.headers headers
+  body
 end
 
 get '/' do
