@@ -51,6 +51,7 @@ get(/\/./) do
   end
 
   self.headers headers
+  self.status status
   body
 end
 

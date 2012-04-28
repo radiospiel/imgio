@@ -10,10 +10,10 @@ class Robot::UrlGetter < Robot
   # always the first robot in an AssemblyLine, as it fetches the remaining 
   # path completely.
   def run
-    blob = ::SimpleHttp.get @url
-
-    image = Magick::Image.from_blob(blob).first
-    [ 200, {}, image ]
+    ::SimpleHttp.get(@url).tap do |response|
+      status, headers, blob = *response
+      response[2] = Magick::Image.from_blob(blob).first if status == 200
+    end
   end
   
   def configure!(path)

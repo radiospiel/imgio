@@ -44,4 +44,10 @@ class FunctionalTest < ImgioTestCase
     get '/fill/100x50/http://www.rubycgi.org/image/ruby_gtk_book_title.jpg'
     assert_equal 'image/png', last_response.headers['Content-Type']
   end
+
+  def test_get_404_from_sinatra
+    get '/fill/100x50/http://www.rubycgi.org/image/missing.jpg'
+    assert_equal "text/html; charset=iso-8859-1", last_response.headers['Content-Type']
+    assert_equal 404, last_response.status
+  end
 end
