@@ -24,14 +24,22 @@ module SimpleHttp
   end
   
   module Sync
+    # returns [ status, headers, body ]
     def get(url, max_redirections = MAX_REDIRECTIONS)
       raise ArgumentError, 'HTTP redirect too deep' if max_redirections == 0
 
-      case response = Net::HTTP.get_response(URI.parse(url))
-      when Net::HTTPSuccess     then response.body
-      when Net::HTTPRedirection then get(response['location'], max_redirections - 1)
-      else                           response.error!
+      response = Net::HTTP.get_response(URI.parse(url))
+
+      # redirect?
+      return get(response['location'], max_redirections - 1) if response.is_a?(Net::HTTPRedirection)
+
+      # build return value
+      headers = {}
+      response.each_capitalized do |key, value|
+        headers.store key, value
       end
+      
+      [ response.code.to_i, headers, response.body ]
     end
   end
 

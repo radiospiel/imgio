@@ -19,7 +19,7 @@ http_interactions:
     headers:
       !binary "RGF0ZQ==":
       - !binary |-
-        VGh1LCAxOSBBcHIgMjAxMiAyMjozODowMSBHTVQ=
+        U2F0LCAyOCBBcHIgMjAxMiAxMjoyNTo0NSBHTVQ=
       !binary "U2VydmVy":
       - !binary |-
         QXBhY2hlLzIuMi4zIChVbml4KQ==
@@ -567,5 +567,59 @@ http_interactions:
         j2dlKtZ0uwljrJmOK49sHaOq/YifYiJ26hZtRk1rbdbVi2ttCIURnTBCXYX8
         tfvJ9i/r6bSN1dYxGR4+yv/Z
     http_version: 
-  recorded_at: Thu, 19 Apr 2012 22:37:47 GMT
+  recorded_at: Sat, 28 Apr 2012 12:25:28 GMT
+- request:
+    method: get
+    uri: http://www.rubycgi.org/image/missing.jpg
+    body:
+      encoding: US-ASCII
+      string: ''
+    headers:
+      Accept:
+      - ! '*/*'
+      User-Agent:
+      - Ruby
+  response:
+    status:
+      code: 404
+      message: Not Found
+    headers:
+      !binary "RGF0ZQ==":
+      - !binary |-
+        U2F0LCAyOCBBcHIgMjAxMiAxMjoyNjo0NyBHTVQ=
+      !binary "U2VydmVy":
+      - !binary |-
+        QXBhY2hlLzIuMi4zIChVbml4KQ==
+      Content-Length:
+      - !binary |-
+        Mjkz
+      !binary "Q29ubmVjdGlvbg==":
+      - !binary |-
+        Y2xvc2U=
+      Content-Type:
+      - !binary |-
+        dGV4dC9odG1sOyBjaGFyc2V0PWlzby04ODU5LTE=
+    body:
+      encoding: US-ASCII
+      string: ! '<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML 2.0//EN">
+
+        <html><head>
+
+        <title>404 Not Found</title>
+
+        </head><body>
+
+        <h1>Not Found</h1>
+
+        <p>The requested URL /image/missing.jpg was not found on this server.</p>
+
+        <hr>
+
+        <address>Apache/2.2.3 (Unix) Server at www.rubycgi.org Port 80</address>
+
+        </body></html>
+
+'
+    http_version: 
+  recorded_at: Sat, 28 Apr 2012 12:26:30 GMT
 recorded_with: VCR 2.0.1

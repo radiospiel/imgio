@@ -6,7 +6,7 @@
 class Robot::Writer < Robot
   def write_image(headers, image, content_type, &block)
     blob = image.to_blob(&block)
-    [ headers.update("Content-Type" => content_type), blob ]
+    [ 200, headers.update("Content-Type" => content_type), blob ]
   end
 end
 
@@ -16,7 +16,7 @@ class Robot::Writer::Jpg < Robot::Writer
     @quality = path.fetch(%r{\d+})
   end
 
-  def run(headers, image)
+  def run(status, headers, image)
     # Note: the block below has a strange scope; it is not bound to the
     # Robot::Jpg object. Hence we cannot access Robot's internals here, 
     # and must explicitely bind the quality value.
@@ -31,7 +31,7 @@ end
 
 # A robot to write a PNG image.
 class Robot::Writer::Png < Robot::Writer
-  def run(headers, image)
+  def run(status, headers, image)
     write_image(headers, image, "image/png") do |img|
       img.format = "PNG"
     end
@@ -40,7 +40,7 @@ end
 
 # A robot to write a GIF image.
 class Robot::Writer::Gif < Robot::Writer
-  def run(headers, image)
+  def run(status, headers, image)
     write_image(headers, image, "image/gif") do |img|
       img.format = "GIF"
     end

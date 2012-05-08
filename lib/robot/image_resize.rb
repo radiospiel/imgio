@@ -5,10 +5,11 @@ class Robot::Resize < Robot
     geometry = path.fetch("\\d+x\\d+") || invalid_path!(path.to_s)
     @width, @height = geometry.split("x").map(&:to_i)
   end
-  
-  def matches_geometry?(image)
-    image.columns == @width && image.rows == @height
-  end
+
+  # This method returns true if the passed in image has the requested geometry.
+  # def matches_geometry?(image)
+  #   image.columns == @width && image.rows == @height
+  # end
   
   def scale_down(image, geometry)
     image.change_geometry(geometry) do |cols, rows, img|
@@ -22,19 +23,19 @@ end
 # I don't know if we need that one as a standalone robot.
 =begin
 class Robot::Scale < Robot::Resize
-  def run(headers, image)
+  def run(status, headers, image)
     result = image.change_geometry(geometry) do |cols, rows, img|
       next if cols >= img.columns || rows >= img.rows
       img.resize!(cols, rows)
     end
 
-    [ headers, result ]
+    [ 200, headers, result ]
   end
 end
 =end
 
 class Robot::Fill < Robot::Resize
-  def run(headers, image)
+  def run(status, headers, image)
     resized = scale_down(image, "#{width}x#{height}^") || image
 
     # get scale factor: the image might not have been resized, because
@@ -44,12 +45,12 @@ class Robot::Fill < Robot::Resize
     result = Magick::Image.new(width * scale, height * scale)
     result = result.composite(resized, Magick::CenterGravity, Magick::OverCompositeOp)
     
-    [ headers, result ]
+    [ 200, headers, result ]
   end
 end
 
 class Robot::Fit < Robot::Resize
-  def run(headers, image)
+  def run(status, headers, image)
     resized = scale_down(image, "#{width}x#{height}") || image
 
     # get scale factor: the image might not have been resized, because
@@ -63,6 +64,6 @@ class Robot::Fit < Robot::Resize
 
     result = result.composite(resized, Magick::CenterGravity, Magick::OverCompositeOp)
     
-    [ headers, result ]
+    [ 200, headers, result ]
   end
 end

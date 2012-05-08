@@ -1,4 +1,7 @@
 class AssemblyLine
+  #
+  # The AssemblyLine::Path class is used to parse an AssemblyLine
+  # description string and configure the AssemblyLine robots.
   class Path
     def initialize(string)
       @original_string, @string = string.dup.freeze, string
@@ -30,6 +33,12 @@ class AssemblyLine
       first
     end
     
+    # Fetches the name of the next robot, and builds and configures it.
+    def build_robot
+      return unless word = self.fetch
+      AssemblyLine.new_robot(word).tap { |robot| robot.configure!(self) }
+    end
+
     def fetch_remainder
       r, @string = @string, nil
       r
@@ -42,38 +51,37 @@ class AssemblyLine
     @robots = []
     
     path = Path.new(path_in)
-    while robot = build_robot(path) do
+    while robot = path.build_robot do
       @robots.unshift(robot)
     end
   end
   
-  def self.robots
-    @robots ||= {}
+  def self.register_robot_klass(name, klass)
+    @robots ||= Hash.new { |hash, name| raise(ArgumentError, "Invalid robot #{name.inspect}") }
+    @robots[name] = klass
   end
 
-  def self.register_robot(name, klass)
-    robots[name] = klass
+  # creates a Robot instance for the \a name.
+  def self.new_robot(name)
+    @robots[name].new(name)
   end
 
-  def build_robot(path)
-    return unless word = path.fetch
-
-    robot_klass = self.class.robots[word] || "Invalid robot #{word.inspect}"
-    robot_klass.new(word).tap { |robot| robot.configure!(path) }
-  end
-  
+  # Runs the AssemblyLine: starts by running the first robot, and passes the
+  # values thru all robots, but only if the status is 200.
   def run
     @robots.inject(nil) do |data, robot|
-      robot.run(*data)
+      data = robot.run(*data)
+      return data if data.first != 200
+      data
     end
   end
 end
 
 
-AssemblyLine.register_robot "jpg",    Robot::Writer::Jpg
-AssemblyLine.register_robot "png",    Robot::Writer::Png
-AssemblyLine.register_robot "gif",    Robot::Writer::Gif
-AssemblyLine.register_robot "http:",  Robot::UrlGetter
-AssemblyLine.register_robot "https:", Robot::UrlGetter
-AssemblyLine.register_robot "fill",   Robot::Fill
-AssemblyLine.register_robot "fit",    Robot::Fit
+AssemblyLine.register_robot_klass "jpg",    Robot::Writer::Jpg
+AssemblyLine.register_robot_klass "png",    Robot::Writer::Png
+AssemblyLine.register_robot_klass "gif",    Robot::Writer::Gif
+AssemblyLine.register_robot_klass "http:",  Robot::UrlGetter
+AssemblyLine.register_robot_klass "https:", Robot::UrlGetter
+AssemblyLine.register_robot_klass "fill",   Robot::Fill
+AssemblyLine.register_robot_klass "fit",    Robot::Fit
