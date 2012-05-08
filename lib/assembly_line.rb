@@ -57,7 +57,7 @@ class AssemblyLine
   end
   
   def self.register_robot_klass(name, klass)
-    @robots ||= Hash.new { |hash, name| raise(ArgumentError, "Invalid robot #{name.inspect}") }
+    @robots ||= Hash.new { |hash, name| raise(Errno::ENOENT, "Invalid robot #{name.inspect}") }
     @robots[name] = klass
   end
 

@@ -31,28 +31,32 @@ end
 
 
 get(/\/./) do
-  # Hu? Sinatra (or probably Rack) eats double slashes in request.path?
-  request_path = request.path.
-    gsub(%r{\b(http|https):/}, "\\1://").
-    gsub(%r{\b(http|https):///}, "\\1://")
+  begin
+    # Hu? Sinatra (or probably Rack) eats double slashes in request.path?
+    request_path = request.path.
+      gsub(%r{\b(http|https):/}, "\\1://").
+      gsub(%r{\b(http|https):///}, "\\1://")
 
-  query_string = request.env["QUERY_STRING"].to_s
+    query_string = request.env["QUERY_STRING"].to_s
 
-  path_with_query = request_path
-  path_with_query += "?#{query_string}" unless query_string.empty?
+    path_with_query = request_path
+    path_with_query += "?#{query_string}" unless query_string.empty?
 
-  assembly_line = AssemblyLine.new(path_with_query)
-  
-  status, headers, body = assembly_line.run
+    assembly_line = AssemblyLine.new(path_with_query)
 
-  # Note that Robot::Png is able to run without a configure! step.
-  if status == 200 && body.is_a?(Magick::Image)
-    status, headers, body = Robot::Writer::Png.new.run(status, headers, body)
+    status, headers, body = assembly_line.run
+
+    # Note that Robot::Png is able to run without a configure! step.
+    if status == 200 && body.is_a?(Magick::Image)
+      status, headers, body = Robot::Writer::Png.new.run(status, headers, body)
+    end
+
+    self.headers headers
+    self.status status
+    body
+  rescue Errno::ENOENT 
+    raise Sinatra::NotFound
   end
-
-  self.headers headers
-  self.status status
-  body
 end
 
 get '/' do
