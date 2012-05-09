@@ -9,6 +9,7 @@ EVENT_MACHINED = false
 
 require "sinatra"
 require "sinatra/synchrony" if EVENT_MACHINED
+require "mime/types"
 
 if development?
   require "sinatra/reloader"
@@ -16,6 +17,11 @@ if development?
 end
 
 require "RMagick" unless defined?(Magick)
+
+# If path_traversal protection is enabled rack-protection eats double
+# slashes in the URL. As 3rd party URLs are part of imgio URLs, this
+# would break the parameter parsing.
+set :protection, :except => :path_traversal
 
 require "#{File.dirname(__FILE__)}/lib/http"
 require "#{File.dirname(__FILE__)}/lib/robot"
@@ -29,17 +35,11 @@ before do
   expires 24*3600, :public
 end
 
-
 get(/\/./) do
   begin
-    # Hu? Sinatra (or probably Rack) eats double slashes in request.path?
-    request_path = request.path.
-      gsub(%r{\b(http|https):/}, "\\1://").
-      gsub(%r{\b(http|https):///}, "\\1://")
+    path_with_query = request.path
 
     query_string = request.env["QUERY_STRING"].to_s
-
-    path_with_query = request_path
     path_with_query += "?#{query_string}" unless query_string.empty?
 
     assembly_line = AssemblyLine.new(path_with_query)
@@ -50,7 +50,7 @@ get(/\/./) do
     if status == 200 && body.is_a?(Magick::Image)
       status, headers, body = Robot::Writer::Png.new.run(status, headers, body)
     end
-
+    
     self.headers headers
     self.status status
     body
