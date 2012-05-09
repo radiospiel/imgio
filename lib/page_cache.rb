@@ -48,12 +48,10 @@ class PageCache
     # The cached file will be delivered by Rack::Static, and we don't need
     # (and don't want to: this zeroes the file, for some reason) to rewrite the path
     return if File.exists?(path)
-    puts "Cache in #{path}"
     
     FileUtils.mkdir_p(File.dirname(path))
     File.open(path, 'wb') do |f| 
       res[2].each do |c| 
-        puts "Write #{c.length} byte"
         f.write(c)
       end
     end
@@ -62,8 +60,8 @@ class PageCache
   def matching_content_type?(env, res)
     return unless content_type = res[1]['Content-Type']
     
-    request_path = env['REQUEST_PATH']
-    mime_types = MIME::Types.type_for(request_path)
+    path_info = env['PATH_INFO']
+    mime_types = MIME::Types.type_for(path_info)
     mime_types = [ "text/html" ] if mime_types.empty?
 
     mime_types.any? do |mime_type|
