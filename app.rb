@@ -23,6 +23,12 @@ require "RMagick" unless defined?(Magick)
 # would break the parameter parsing.
 set :protection, :except => :path_traversal
 
+if settings.static
+  STDERR.puts "Enable ResponseCache in #{settings.public_folder}"
+  require "#{File.dirname(__FILE__)}/lib/page_cache"
+  use PageCache, settings.public_folder
+end
+
 require "#{File.dirname(__FILE__)}/lib/http"
 require "#{File.dirname(__FILE__)}/lib/robot"
 require "#{File.dirname(__FILE__)}/lib/assembly_line"

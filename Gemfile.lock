@@ -23,6 +23,7 @@ GEM
     linecache19 (0.5.12)
       ruby_core_source (>= 0.1.4)
     metaclass (0.0.1)
+    mime-types (1.18)
     mocha (0.11.0)
       metaclass (~> 0.0.1)
     multi_json (1.2.0)
@@ -82,6 +83,7 @@ PLATFORMS
 
 DEPENDENCIES
   image_size
+  mime-types
   mocha
   psych
   rack-test

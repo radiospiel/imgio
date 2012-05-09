@@ -1,6 +1,7 @@
 source :rubygems
 
 gem "sinatra-synchrony"
+gem "mime-types"
 gem "rmagick"
 gem "thin"
 gem "sinatra-contrib", :group => :development
