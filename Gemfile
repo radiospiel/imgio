@@ -1,7 +1,7 @@
 source :rubygems
 
 gem "sinatra-synchrony"
-gem "mime-types"
+gem "rack_page_cache"
 gem "rmagick"
 gem "thin"
 gem "sinatra-contrib", :group => :development

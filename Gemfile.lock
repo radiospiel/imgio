@@ -34,6 +34,9 @@ GEM
       rack
     rack-test (0.6.1)
       rack (>= 1.0)
+    rack_page_cache (0.1.0)
+      mime-types
+      rack
     rake (0.9.2.2)
     rmagick (2.13.1)
     ruby-debug-base19 (0.11.25)
@@ -83,10 +86,10 @@ PLATFORMS
 
 DEPENDENCIES
   image_size
-  mime-types
   mocha
   psych
   rack-test
+  rack_page_cache
   rake
   rmagick
   ruby-debug19

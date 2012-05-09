@@ -24,9 +24,9 @@ require "RMagick" unless defined?(Magick)
 set :protection, :except => :path_traversal
 
 if settings.static
-  STDERR.puts "Enable ResponseCache in #{settings.public_folder}"
-  require "#{File.dirname(__FILE__)}/lib/page_cache"
-  use PageCache, settings.public_folder
+  STDERR.puts "Enable PageCache in #{settings.public_folder}"
+  require "rack/page_cache"
+  use Rack::PageCache, settings.public_folder
 end
 
 require "#{File.dirname(__FILE__)}/lib/http"
