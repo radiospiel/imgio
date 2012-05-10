@@ -57,12 +57,25 @@ class Robot::Fit < Robot::Resize
     # it is smaller than what was requested already.
     scale = [resized.columns.to_f / width, resized.rows.to_f / height].max
 
-    result = Magick::Image.new(width * scale,height * scale) {
+    result = Magick::Image.new(width * scale, height * scale) {
       # self.background_color = format == "png" ? "none" : "white"
       self.background_color = "none"
     }
-
+    
     result = result.composite(resized, Magick::CenterGravity, Magick::OverCompositeOp)
+    
+    [ 200, headers, result ]
+  end
+end
+
+class Robot::Aspect < Robot::Resize
+  def run(status, headers, image)
+    # get scale factor: the image might not have been resized, because
+    # it is smaller than what was requested already.
+    scale = [image.columns.to_f / width, image.rows.to_f / height].min
+
+    w, h = (width * scale + 0.5).to_i, (height * scale + 0.5).to_i
+    result = scale_down(image, "#{w}x#{h}") || image
     
     [ 200, headers, result ]
   end

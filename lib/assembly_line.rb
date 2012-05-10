@@ -85,3 +85,4 @@ AssemblyLine.register_robot_klass "http:",  Robot::UrlGetter
 AssemblyLine.register_robot_klass "https:", Robot::UrlGetter
 AssemblyLine.register_robot_klass "fill",   Robot::Fill
 AssemblyLine.register_robot_klass "fit",    Robot::Fit
+AssemblyLine.register_robot_klass "th",     Robot::Aspect
