@@ -23,7 +23,7 @@ require "RMagick" unless defined?(Magick)
 # would break the parameter parsing.
 set :protection, :except => :path_traversal
 
-if settings.static
+if false && settings.static
   STDERR.puts "Enable PageCache in #{settings.public_folder}"
   require "rack/page_cache"
   use Rack::PageCache, settings.public_folder
