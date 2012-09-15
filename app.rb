@@ -59,6 +59,8 @@ get(/\/./) do
     self.headers headers
     self.headers.delete "Content-Length"
     self.status status
+
+    self.headers.delete "Pragma"
     expires 24*3600, :public
     
     body
