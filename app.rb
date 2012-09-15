@@ -57,6 +57,7 @@ get(/\/./) do
     end
     
     self.headers headers
+    self.headers.delete "Content-Length"
     self.status status
     expires 24*3600, :public
     
