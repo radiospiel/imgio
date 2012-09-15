@@ -9,6 +9,7 @@ EVENT_MACHINED = false
 
 require "sinatra"
 require "sinatra/synchrony" if EVENT_MACHINED
+require "mime/types"
 
 if development?
   require "sinatra/reloader"
@@ -16,6 +17,17 @@ if development?
 end
 
 require "RMagick" unless defined?(Magick)
+
+# If path_traversal protection is enabled rack-protection eats double
+# slashes in the URL. As 3rd party URLs are part of imgio URLs, this
+# would break the parameter parsing.
+set :protection, :except => :path_traversal
+
+if settings.static
+  STDERR.puts "Enable PageCache in #{settings.public_folder}"
+  require "rack/page_cache"
+  use Rack::PageCache, settings.public_folder
+end
 
 require "#{File.dirname(__FILE__)}/lib/http"
 require "#{File.dirname(__FILE__)}/lib/robot"
@@ -25,31 +37,33 @@ disable :threaded if EVENT_MACHINED
 
 disable :run
 
-before do
-  expires 24*3600, :public
-end
-
 # By default rack-protection removes double slashes, we do need them.
 set :protection, :except => :path_traversal
 
 get(/\/./) do
-  path_with_query = request.path
-  path_with_query += "?#{request.query_string}" unless request.query_string.empty?
+  begin
+    path_with_query = request.path
 
-  assembly_line = AssemblyLine.new(path_with_query)
-  
-  status, headers, body = assembly_line.run
+    query_string = request.env["QUERY_STRING"].to_s
+    path_with_query += "?#{query_string}" unless query_string.empty?
 
-  # Note that Robot::Png is able to run without a configure! step.
-  if status == 200 && body.is_a?(Magick::Image)
-    status, headers, body = Robot::Writer::Png.new.run(status, headers, body)
+    assembly_line = AssemblyLine.new(path_with_query)
+
+    status, headers, body = assembly_line.run
+
+    # Note that Robot::Png is able to run without a configure! step.
+    if status == 200 && body.is_a?(Magick::Image)
+      status, headers, body = Robot::Writer::Png.new.run(status, headers, body)
+    end
+    
+    self.headers headers
+    self.status status
+    expires 24*3600, :public
+    
+    body
+  rescue Errno::ENOENT 
+    raise Sinatra::NotFound
   end
-
-  self.headers headers
-  self.status status
-  expires 24*3600, :public
-
-  body
 end
 
 get '/' do

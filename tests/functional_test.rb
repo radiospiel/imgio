@@ -32,7 +32,7 @@ class FunctionalTest < ImgioTestCase
 
   def test_conversion_to_jpg
     get '/jpg/fill/100x50/http://www.rubycgi.org/image/ruby_gtk_book_title.jpg'
-    assert_equal 'image/jpg', last_response.headers['Content-Type']
+    assert_equal 'image/jpeg', last_response.headers['Content-Type']
   end
 
   def test_conversion_to_png

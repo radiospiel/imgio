@@ -1,6 +1,7 @@
 source :rubygems
 
 gem "sinatra-synchrony"
+gem "rack_page_cache"
 gem "rmagick"
 gem "thin"
 gem "sinatra-contrib", :group => :development
