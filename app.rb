@@ -47,6 +47,8 @@ get(/\/./) do
 
   self.headers headers
   self.status status
+  expires 24*3600, :public
+
   body
 end
 
