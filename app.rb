@@ -55,12 +55,16 @@ get(/\/./) do
     if status == 200 && body.is_a?(Magick::Image)
       status, headers, body = Robot::Writer::Png.new.run(status, headers, body)
     end
-    
+
+    # Delete headers we don't want.
+    headers.keys.each do |key|
+      next unless key =~ /^(X-|Via$|P3p|Pragma$|Content-Length$)/
+      headers.delete key
+    end
+
     self.headers headers
-    self.headers.delete "Content-Length"
     self.status status
 
-    self.headers.delete "Pragma"
     expires 24*3600, :public
     
     body
