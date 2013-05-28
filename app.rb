@@ -9,6 +9,7 @@ EVENT_MACHINED = false
 
 require "sinatra"
 require "sinatra/synchrony" if EVENT_MACHINED
+require "mime/types"
 
 if development?
   require "sinatra/reloader"
@@ -16,6 +17,17 @@ if development?
 end
 
 require "RMagick" unless defined?(Magick)
+
+# If path_traversal protection is enabled rack-protection eats double
+# slashes in the URL. As 3rd party URLs are part of imgio URLs, this
+# would break the parameter parsing.
+set :protection, :except => :path_traversal
+
+if false && settings.static
+  STDERR.puts "Enable PageCache in #{settings.public_folder}"
+  require "rack/page_cache"
+  use Rack::PageCache, settings.public_folder
+end
 
 require "#{File.dirname(__FILE__)}/lib/http"
 require "#{File.dirname(__FILE__)}/lib/robot"
@@ -25,34 +37,40 @@ disable :threaded if EVENT_MACHINED
 
 disable :run
 
-before do
-  expires 24*3600, :public
-end
-
+# By default rack-protection removes double slashes, we do need them.
+set :protection, :except => :path_traversal
 
 get(/\/./) do
-  # Hu? Sinatra (or probably Rack) eats double slashes in request.path?
-  request_path = request.path.
-    gsub(%r{\b(http|https):/}, "\\1://").
-    gsub(%r{\b(http|https):///}, "\\1://")
+  begin
+    path_with_query = request.path
 
-  query_string = request.env["QUERY_STRING"].to_s
+    query_string = request.env["QUERY_STRING"].to_s
+    path_with_query += "?#{query_string}" unless query_string.empty?
 
-  path_with_query = request_path
-  path_with_query += "?#{query_string}" unless query_string.empty?
+    assembly_line = AssemblyLine.new(path_with_query)
 
-  assembly_line = AssemblyLine.new(path_with_query)
-  
-  status, headers, body = assembly_line.run
+    status, headers, body = assembly_line.run
 
-  # Note that Robot::Png is able to run without a configure! step.
-  if status == 200 && body.is_a?(Magick::Image)
-    status, headers, body = Robot::Writer::Png.new.run(status, headers, body)
+    # Note that Robot::Png is able to run without a configure! step.
+    if status == 200 && body.is_a?(Magick::Image)
+      status, headers, body = Robot::Writer::Png.new.run(status, headers, body)
+    end
+
+    # Delete headers we don't want.
+    headers.keys.each do |key|
+      next unless key =~ /^(X-|Via$|P3p|Pragma$|Content-Length$)/
+      headers.delete key
+    end
+
+    self.headers headers
+    self.status status
+
+    expires 24*3600, :public
+    
+    body
+  rescue Errno::ENOENT 
+    raise Sinatra::NotFound
   end
-
-  self.headers headers
-  self.status status
-  body
 end
 
 get '/' do

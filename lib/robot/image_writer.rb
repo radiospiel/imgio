@@ -22,7 +22,7 @@ class Robot::Writer::Jpg < Robot::Writer
     # and must explicitely bind the quality value.
     quality = @quality
 
-    write_image(headers, image, "image/jpg") do |img|
+    write_image(headers, image, "image/jpeg") do |img|
       img.format = "JPG"
       img.quality = quality.to_i if quality
     end
