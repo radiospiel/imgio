@@ -16,7 +16,7 @@ module SimpleHttp
       connection = EM::HttpRequest.new(url).get(:redirects => MAX_REDIRECTIONS)
       status = connection.response_header.status
       if status >= 200 && status < 300
-        connection.response
+        [ connection.response_header.status, connection.response_header, connection.response ]
       else
         raise "Failed to fetch #{url}, status: #{connection.response_header.status}"
       end
