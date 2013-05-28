@@ -28,7 +28,16 @@ module SimpleHttp
     def get(url, max_redirections = MAX_REDIRECTIONS)
       raise ArgumentError, 'HTTP redirect too deep' if max_redirections == 0
 
-      response = Net::HTTP.get_response(URI.parse(url))
+      uri = URI.parse(url)
+
+      # build HTTP connection
+      http = Net::HTTP.new(uri.host, uri.port)
+      http.use_ssl = uri.scheme == "https"
+      http.verify_mode = OpenSSL::SSL::VERIFY_NONE # Danger! But https://a0.twimg.com wouldn't work.
+      
+      # get response
+      request = Net::HTTP::Get.new(uri.request_uri)
+      response = http.request(request)
 
       # redirect?
       return get(response['location'], max_redirections - 1) if response.is_a?(Net::HTTPRedirection)
