@@ -9,10 +9,20 @@ end
 # a certain number of redirections. Note: This module is named "SimpleHttp" to prevent a name clash with
 # VCR and/or WebMock.
 module SimpleHttp
+  def self.log(*args)
+    STDERR.puts args.join(" ")
+  end
+  
+  if ENV["RACK_ENV"] == "test"
+    def self.log(*args)
+    end
+  end
+  
   MAX_REDIRECTIONS=10
 
   module Async
     def get(url)
+      log "GET/async #{url}"
       connection = EM::HttpRequest.new(url).get(:redirects => MAX_REDIRECTIONS)
       status = connection.response_header.status
       if status >= 200 && status < 300
@@ -26,6 +36,8 @@ module SimpleHttp
   module Sync
     # returns [ status, headers, body ]
     def get(url, max_redirections = MAX_REDIRECTIONS)
+      log "GET/async #{url}"
+      
       raise ArgumentError, 'HTTP redirect too deep' if max_redirections == 0
 
       uri = URI.parse(url)
