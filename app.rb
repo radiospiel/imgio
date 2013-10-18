@@ -1,11 +1,5 @@
 # coding: utf-8
-EVENT_MACHINED=if ENV.key?("IMGIO_EVENT_MACHINED") 
-  ENV["IMGIO_EVENT_MACHINED"].to_i != 0
-else
-  RUBY_VERSION =~ /^1.9/
-end
-
-EVENT_MACHINED = false
+EVENT_MACHINED=ENV['RACK_ENV'] != 'test'
 
 require "sinatra"
 require "sinatra/synchrony" if EVENT_MACHINED
@@ -23,11 +17,11 @@ require "RMagick" unless defined?(Magick)
 # would break the parameter parsing.
 set :protection, :except => :path_traversal
 
-if false && settings.static
-  STDERR.puts "Enable PageCache in #{settings.public_folder}"
-  require "rack/page_cache"
-  use Rack::PageCache, settings.public_folder
-end
+set :static, true
+
+STDERR.puts "Enable PageCache in #{settings.public_folder}"
+require "rack/page_cache"
+use Rack::PageCache, settings.public_folder
 
 require "#{File.dirname(__FILE__)}/lib/http"
 require "#{File.dirname(__FILE__)}/lib/robot"
