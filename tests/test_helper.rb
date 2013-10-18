@@ -5,7 +5,7 @@ ENV['RACK_ENV'] = 'test'
 Bundler.setup(:default)
 require "#{File.dirname(__FILE__)}/../app.rb"
 require 'test/unit'
-require "mocha"
+require "mocha/setup"
 
 Bundler.require(:test)
 
